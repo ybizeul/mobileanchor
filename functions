@@ -3,8 +3,7 @@ function put_config {
     destination=$2
 
     cp $source $destination
-    cat config|while read key value; do
+    cat config|grep -v "^#"|while read key value; do
         sed -i -E "s/%%$key%%/$value/g" $destination
     done
 }
-
