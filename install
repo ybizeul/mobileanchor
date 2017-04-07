@@ -1,0 +1,18 @@
+apt-get install minidlna hostapd samba exfat-fuse udhcpd
+
+put_config files/11-media-by-label-auto-mount.rules /etc/udev/rules.d/11-media-by-label-auto-mount.rules
+put_config files/hostapd.conf /etc/hostapd/hostapd.conf
+put_config files/minidlna.conf /etc/minidlna.conf
+put_config files/smb.conf /etc/samba/smb.conf
+put_config files/udhcpd.conf /etc/udhcpd.conf
+
+
+function put_config {
+    source=$1
+    destination=$2
+
+    cp $source $destination
+    cat config|while read key value; do
+	sed -i -E "s/%%$key%%/$value/g" $destination
+    done
+}
