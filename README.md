@@ -9,7 +9,7 @@ It also features basic file serving abilities through minidlna and a samba serve
 
 ## Use case
 I use Mobile Anchor primarily to build a media server for the car, but the possibilities are endless once you
-get a device that connects together tablets, phones and computers on the same WiFi network.
+get devices to connect together like tablets, phones and computers on the same WiFi network.
 
 [VLC](http://www.videolan.org/) on [iOS](http://www.videolan.org/vlc/download-ios.html), or [Android](http://www.videolan.org/vlc/download-android.html) can access and playback media content.
 
