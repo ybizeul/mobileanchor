@@ -1,18 +1,40 @@
+#!/bin/bash
+
 apt-get install minidlna hostapd samba exfat-fuse udhcpd
 
+. functions
+
 put_config files/11-media-by-label-auto-mount.rules /etc/udev/rules.d/11-media-by-label-auto-mount.rules
+put_config files/hostapd /etc/default/hostapd
 put_config files/hostapd.conf /etc/hostapd/hostapd.conf
 put_config files/minidlna.conf /etc/minidlna.conf
 put_config files/smb.conf /etc/samba/smb.conf
 put_config files/udhcpd.conf /etc/udhcpd.conf
+put_config files/udhcpd /etc/default/udhcpd
 
+udevadm control --reload-rules
 
-function put_config {
-    source=$1
-    destination=$2
+sed -i -E "/iface wlan0/,//d" /etc/network/interfaces
+cat files/interfaces >> /etc/network/interfaces
 
-    cp $source $destination
-    cat config|while read key value; do
-	sed -i -E "s/%%$key%%/$value/g" $destination
-    done
-}
+ifdown wlan0
+ifup wlan0
+
+sed -i -E "/fs.inotify.max_user_watches=/d" /etc/sysctl.conf
+echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
+sysctl -p
+
+[ -d /var/cache/minidlna ] || mkdir /var/cache/minidlna && chown minidlna.minidlna /var/cache/minidlna
+
+systemctl enable hostapd
+systemctl enable udhcpd
+systemctl enable minidlna
+
+systemctl stop hostapd
+systemctl stop udhcpd
+systemctl stop minidlna
+
+systemctl start hostapd
+systemctl start udhcpd
+systemctl start minidlna
+

@@ -1,0 +1,10 @@
+function put_config {
+    source=$1
+    destination=$2
+
+    cp $source $destination
+    cat config|while read key value; do
+        sed -i -E "s/%%$key%%/$value/g" $destination
+    done
+}
+
