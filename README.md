@@ -12,4 +12,5 @@ Edit the `config` file to setup your WiFi access point and key, then run the `in
 $ cat config 
 SSID MySSID
 WIFI_KEY Sup3rS3cretKey
-$ sudo ./install ```
+$ sudo ./install
+```
