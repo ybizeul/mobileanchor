@@ -17,8 +17,19 @@ get devices to connect together like tablets, phones and computers on the same W
 Edit the `config` file to setup your WiFi access point and key, then run the `install` script with sudo.
 ```
 $ cp config.sample config
-$ cat config 
+$ cat config
+# WiFi Network Name
 SSID MySSID
+
+# Wifi Key
 WIFI_KEY Sup3rS3cretKey
+
+# IP Address
+IP_ADDRESS 192.168.101.1
+NETMASK 255.255.255.0
+
+# DHCP start/end
+DHCP_START 192.168.101.100
+DHCP_END 192.168.101.200
 $ sudo ./install
 ```
