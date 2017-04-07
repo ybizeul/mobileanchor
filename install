@@ -1,8 +1,39 @@
 #!/bin/bash
 
+# Verify that configuration file exists first
+
+[ -e config ] || {
+    echo "Configuration file does not exists"
+    echo "Please copy the default file 'config.example' to 'config' and edit"
+    echo "to your liking."
+    exit 1
+}
+
+# Install additional packages
+
+# minidlna
+# Is a simple DLNA server use to play your media content on any compatible
+# device
+
+# hostapd
+# Creates and condigures the WiFi access point visible to your devices
+
+# samba
+# Serves content through the CIFS protocol to PC, Macs and any compatible
+# devices
+
+# exfat-fuse (EXPERIMENTAL)
+# Is a uszer space fuse module to be able to read Exfat partitions
+
+# udhcpd
+# Is the DHCP server
+
 apt-get install minidlna hostapd samba exfat-fuse udhcpd
 
+# Source additional bach functions
 . functions
+
+# Put configuration files in place and setup configuration values
 
 put_config files/11-media-by-label-auto-mount.rules /etc/udev/rules.d/11-media-by-label-auto-mount.rules
 put_config files/hostapd /etc/default/hostapd
@@ -12,24 +43,31 @@ put_config files/smb.conf /etc/samba/smb.conf
 put_config files/udhcpd.conf /etc/udhcpd.conf
 put_config files/udhcpd /etc/default/udhcpd
 
+# Reload udevadm rules
 udevadm control --reload-rules
 
+# Add wlan0 configuration lines to network config
 sed -i -E "/iface wlan0/,//d" /etc/network/interfaces
 cat files/interfaces >> /etc/network/interfaces
 
+# Restart wlan0
 ifdown wlan0
 ifup wlan0
 
+# Configure inotify watches as the default might be too limited for minidlna
 sed -i -E "/fs.inotify.max_user_watches=/d" /etc/sysctl.conf
 echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
 sysctl -p
 
+# Fix minidlna permission if needed
 [ -d /var/cache/minidlna ] || mkdir /var/cache/minidlna && chown minidlna.minidlna /var/cache/minidlna
 
+# Enable services
 systemctl enable hostapd
 systemctl enable udhcpd
 systemctl enable minidlna
 
+# Stop and start everything
 systemctl stop hostapd
 systemctl stop udhcpd
 systemctl stop minidlna
