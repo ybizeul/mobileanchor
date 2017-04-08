@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source additional bach functions
+. functions
+
 # Verify that configuration file exists first
 
 [ -e config ] || {
@@ -28,23 +31,34 @@
 # udhcpd
 # Is the DHCP server
 
-apt-get install minidlna hostapd samba exfat-fuse udhcpd
+PACKAGES="apt-transport-https hostapd samba exfat-fuse udhcpd"
+config_has MINIDLNA && PACKAGES="$PACKAGES minidlna"
 
-# Source additional bach functions
-. functions
+apt-get install $PACKAGES
+
+
 
 # Put configuration files in place and setup configuration values
 
 put_config files/11-media-by-label-auto-mount.rules /etc/udev/rules.d/11-media-by-label-auto-mount.rules
 put_config files/hostapd /etc/default/hostapd
 put_config files/hostapd.conf /etc/hostapd/hostapd.conf
-put_config files/minidlna.conf /etc/minidlna.conf
 put_config files/smb.conf /etc/samba/smb.conf
 put_config files/udhcpd.conf /etc/udhcpd.conf
 put_config files/udhcpd /etc/default/udhcpd
+config_has MINIDLNA && put_config files/minidlna.conf /etc/minidlna.conf
 
 # Reload udevadm rules
 udevadm control --reload-rules
+
+# Configure Plex Media Server
+if config_has PMS then
+    wget https://dev2day.de/pms/dev2day-pms.gpg.key | apt-key add -
+    echo "deb [arch=armhf] https://dev2day.de/pms/ jessie main" >> /etc/apt/sources.list.d/pms.list
+    dpkg --add-architecture armhf
+    apt-get update
+    apt-get install plexmediaserver-installer:armhf
+fi
 
 # Add wlan0 configuration lines to network config
 sed -i -E "/iface wlan0/,//d" /etc/network/interfaces
@@ -65,14 +79,14 @@ sysctl -p
 # Enable services
 systemctl enable hostapd
 systemctl enable udhcpd
-systemctl enable minidlna
+config_has MINIDLNA && systemctl enable minidlna
 
 # Stop and start everything
 systemctl stop hostapd
 systemctl stop udhcpd
-systemctl stop minidlna
+config_has MINIDLNA && systemctl stop minidlna
 
 systemctl start hostapd
 systemctl start udhcpd
-systemctl start minidlna
+config_has MINIDLNA && systemctl start minidlna
 
