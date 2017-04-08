@@ -10,5 +10,6 @@ function put_config {
 
 function config_has {
     OPTION=$1
-    return grep -E "^$OPTION\$" config
+    grep -E "^$OPTION\$" config
+    return $?
 }

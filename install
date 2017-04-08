@@ -52,7 +52,8 @@ config_has MINIDLNA && put_config files/minidlna.conf /etc/minidlna.conf
 udevadm control --reload-rules
 
 # Configure Plex Media Server
-if config_has PMS then
+if config_has PMS
+then
     wget https://dev2day.de/pms/dev2day-pms.gpg.key | apt-key add -
     echo "deb [arch=armhf] https://dev2day.de/pms/ jessie main" >> /etc/apt/sources.list.d/pms.list
     dpkg --add-architecture armhf
@@ -62,7 +63,8 @@ fi
 
 # Add wlan0 configuration lines to network config
 sed -i -E "/iface wlan0/,//d" /etc/network/interfaces
-cat files/interfaces >> /etc/network/interfaces
+put_config files/interfaces /tmp/mobileanchor_interfaces
+cat /tmp/mobileanchor_interfaces >> /etc/network/interfaces
 
 # Restart wlan0
 ifdown wlan0
