@@ -1,3 +1,7 @@
+# Standard install options
+MINIDLNA
+# PMS
+
 # WiFi Network Name
 SSID MySSID
 
