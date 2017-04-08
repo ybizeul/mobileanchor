@@ -54,11 +54,14 @@ udevadm control --reload-rules
 # Configure Plex Media Server
 if config_has PMS
 then
-    wget https://dev2day.de/pms/dev2day-pms.gpg.key | apt-key add -
+    wget -O - https://dev2day.de/pms/dev2day-pms.gpg.key | apt-key add -
     echo "deb [arch=armhf] https://dev2day.de/pms/ jessie main" >> /etc/apt/sources.list.d/pms.list
     dpkg --add-architecture armhf
     apt-get update
     apt-get install plexmediaserver-installer:armhf
+    plexjstofix=$(sudo find /usr/lib/plexmediaserver -name main*.js)
+    cp $plexjstofix $plexjstofix".bak"
+    sed -i s'/validateTranscoder:function([a-zA-Z],[a-zA-Z]){if/&return false;if/' $plexjstofix
 fi
 
 # Add wlan0 configuration lines to network config
