@@ -7,3 +7,8 @@ function put_config {
         sed -i -E "s/%%$key%%/$value/g" $destination
     done
 }
+
+function config_has {
+    OPTION=$1
+    return grep -E "^$OPTION\$" config
+}
