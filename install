@@ -65,13 +65,14 @@ then
 fi
 
 # Add wlan0 configuration lines to network config
-sed -i -E "/iface wlan0/,//d" /etc/network/interfaces
+ifconfig uap0 || iw dev wlan0 interface add uap0 type __ap
+sed -i -E "/iface uap0/,//d" /etc/network/interfaces
 put_config files/interfaces /tmp/mobileanchor_interfaces
 cat /tmp/mobileanchor_interfaces >> /etc/network/interfaces
 
-# Restart wlan0
-ifdown wlan0
-ifup wlan0
+# Restart uap0
+ifdown uap0
+ifup uap0
 
 # Configure inotify watches as the default might be too limited for minidlna
 sed -i -E "/fs.inotify.max_user_watches=/d" /etc/sysctl.conf

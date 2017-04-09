@@ -1,5 +1,6 @@
 
-iface wlan0 inet static
+iface uap0 inet static
   address %%IP_ADDRESS%%
   netmask %%NETMASK%%
+  up systemctl restart udhcpd
 
