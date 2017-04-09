@@ -1,6 +1,7 @@
 
+allow-hotplug uap0
+auto uap0
 iface uap0 inet static
   address %%IP_ADDRESS%%
   netmask %%NETMASK%%
   up systemctl restart udhcpd
-
